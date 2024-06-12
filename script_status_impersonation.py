@@ -25,7 +25,7 @@ def verify_update(redmine, ticket_id, expected_status):
                     latest_status_id = int(detail['new_value'])
 
         if latest_status_id == expected_status:
-            print(f"Successfully updated issue {ticket_id} to status {expected_status}.")
+            print(f"Successfully updated issue {ticket_id} to status {expected_status} verified.")
         else:
             print(f"Failed to update issue {ticket_id} to status {expected_status}. Please check for related subtasks or other issues.")
     except Exception as e:
@@ -34,10 +34,6 @@ def verify_update(redmine, ticket_id, expected_status):
 def register_redmine_update(redmine, ticket_id, status, notes=None):
     try:
         issue = redmine.issue.get(ticket_id, include=['journals'])
-
-        # Ensure required fields are set
-        if hasattr(issue, 'due_date') and not issue.due_date:
-            issue.due_date = '2024-12-31'  # Example due date
         
         # Update status
         issue.status_id = status
