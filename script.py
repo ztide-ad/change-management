@@ -74,19 +74,19 @@ def register_redmine_update(redmine, ticket_id, notes=None):
     try:
         issue = redmine.issue.get(ticket_id, include=['journals'])
         current_status = issue.status.id
-        last_update_date = issue.updated_on  # No need to parse this, it's already a datetime object
+        last_update_date = issue.updated_on  
         today = datetime.now()
 
-        # Calculate number of status changes needed
+        # Number of status changes needed
         statuses_to_change = custom_order[custom_order.index(current_status) + 1:custom_order.index(5) + 1]
         num_status_changes = len(statuses_to_change)
 
-        # Calculate the interval between status changes
+        # Interval between status changes
         total_days = (today - last_update_date).days
         if num_status_changes > 0:
             interval = total_days // num_status_changes
         else:
-            interval = 1  # Default to 1 day if no changes are needed
+            interval = 1  
 
         for next_status in statuses_to_change:
             last_update_date += timedelta(days=interval)
@@ -95,10 +95,8 @@ def register_redmine_update(redmine, ticket_id, notes=None):
             issue.save()
             print(f"Successfully updated issue {ticket_id} to status {next_status}.")
 
-            # Wait for the journal entry to be created
             journal_id = wait_for_journal_update(redmine, ticket_id, next_status)
 
-            # Update the journal date
             update_journal_date(journal_id, last_update_date)
 
             time.sleep(2)
